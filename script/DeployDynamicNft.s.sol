@@ -43,7 +43,7 @@ contract DeployDynamicNft is Script, CodeConstants {
             bytes(string(abi.encodePacked(svg)))
         );
 
-        // return using a concatanation method below
+        // return using a concatenation method below
         // return string.concat(baseURL, svgBase64Encoded);
         return string(abi.encodePacked(baseURL, svgBase64Encoded));
     }
