@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.19;
+pragma solidity 0.8.19;
 
 import {DynamicNft} from "../src/DynamicNft.sol";
 import {Script} from "forge-std/Script.sol";
@@ -13,25 +13,17 @@ contract CodeConstants {
 }
 
 contract DeployDynamicNft is Script, CodeConstants {
-    function run() external returns (DynamicNft) {
+    function run() external returns (DynamicNft dynamicNft) {
         string memory happySvg = vm.readFile("./img/happy.svg");
         string memory sadSvg = vm.readFile("./img/sad.svg");
 
         vm.startBroadcast();
-        DynamicNft dynamicNft = new DynamicNft(
-            NFT_NAME,
-            NFT_SYMBOL,
-            MAX_SUPPLY,
-            svgToImageURI(happySvg),
-            svgToImageURI(sadSvg)
-        );
+        DynamicNft dynamicNft =
+            new DynamicNft(NFT_NAME, NFT_SYMBOL, MAX_SUPPLY, svgToImageURI(happySvg), svgToImageURI(sadSvg));
         vm.stopBroadcast();
-        return dynamicNft;
     }
 
-    function svgToImageURI(
-        string memory svg
-    ) public pure returns (string memory) {
+    function svgToImageURI(string memory svg) public pure returns (string memory) {
         // example:
         // <svg viewBox="0 0 200 200" width="400"  height="400" ....>
         // data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAyNHB4IiBoZWlnaHQ9
@@ -39,9 +31,7 @@ contract DeployDynamicNft is Script, CodeConstants {
         // prefix to be added to base64 encoded svg
         string memory baseURL = "data:image/svg+xml;base64,";
         // base64 encode svg image file
-        string memory svgBase64Encoded = Base64.encode(
-            bytes(string(abi.encodePacked(svg)))
-        );
+        string memory svgBase64Encoded = Base64.encode(bytes(string(abi.encodePacked(svg))));
 
         // return using a concatenation method below
         // return string.concat(baseURL, svgBase64Encoded);

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.19;
+pragma solidity 0.8.19;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
@@ -55,16 +55,18 @@ contract DynamicNft is ERC721 {
 
     function mintNft() external returns (uint256 nftId) {
         s_currentSupply++;
-        if (s_currentSupply > i_maxSupply)
+        if (s_currentSupply > i_maxSupply) {
             revert DynamicNft__MaxSupplyExceeded();
+        }
         s_tokenIdToMood[s_currentSupply] = Mood.HAPPY;
         _safeMint(msg.sender, s_currentSupply);
         return s_currentSupply;
     }
 
     function flipMood(uint256 tokenId) external {
-        if (_ownerOf(tokenId) != msg.sender)
+        if (_ownerOf(tokenId) != msg.sender) {
             revert DynamicNft__OnlyOwnerCanChangeMood(tokenId);
+        }
         if (s_tokenIdToMood[tokenId] == Mood.HAPPY) {
             s_tokenIdToMood[tokenId] = Mood.SAD;
         } else {
@@ -84,9 +86,7 @@ contract DynamicNft is ERC721 {
                               VIEW & PURE
     //////////////////////////////////////////////////////////////*/
 
-    function tokenURI(
-        uint256 tokenId
-    ) public view override returns (string memory) {
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
         // check token exists
         _requireOwned(tokenId);
         string memory imageUri;
@@ -98,23 +98,22 @@ contract DynamicNft is ERC721 {
         }
         // build and return token metadata in .json format based on dynamic variables
         // {"name": "Dynamic NFT"}
-        return
-            string(
-                abi.encodePacked(
-                    _baseURI(),
-                    Base64.encode(
-                        bytes(
-                            abi.encodePacked(
-                                '{"name": "',
-                                name(),
-                                '", "description": "A dynamic NFT that changes image based on the owners mood.", "attributes": [{"trait_type": "moodiness", "value": 100}], "image": "',
-                                imageUri,
-                                '"}'
-                            )
+        return string(
+            abi.encodePacked(
+                _baseURI(),
+                Base64.encode(
+                    bytes(
+                        abi.encodePacked(
+                            '{"name": "',
+                            name(),
+                            '", "description": "A dynamic NFT that changes image based on the owners mood.", "attributes": [{"trait_type": "moodiness", "value": 100}], "image": "',
+                            imageUri,
+                            '"}'
                         )
                     )
                 )
-            );
+            )
+        );
     }
 
     function getMaxSupply() external view returns (uint256) {
